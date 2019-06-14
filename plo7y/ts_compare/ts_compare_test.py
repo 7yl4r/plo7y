@@ -15,5 +15,14 @@ class Test_ts_compare(TestCase):
         ts_compare(
             "test_data/obis.csv",
             x_key="year",
-            y_key_list=["X", "aphiaID", "year"]
+            y_key_list=["X", "year"]
+        )
+
+    def test_obis_occurrence_group_by(self):
+        """ test ts compare on obis occurence data using y_group_by_key"""
+        ts_compare(
+            "test_data/obis.csv",
+            x_key="year",
+            y_key="X",
+            y_group_by_key="species",
         )
