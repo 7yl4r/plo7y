@@ -13,6 +13,8 @@ TODO: use image for huge N?
 """
 import matplotlib.pyplot as plt
 
+from plo7y._internal.get_dataframe import get_dataframe
+
 
 def ts_compare(
     dta,
@@ -44,7 +46,19 @@ def ts_compare(
     savefig : str
         filepath to save output, else show
     """
+    dta = get_dataframe(dta)
     assert y_key is None or y_key_list is None
+
+    # timeseries rows must be in order
+    dta.sort_values(x_key, inplace=True)
+
+    # drop missing values:
+    orig_len = len(dta)
+    dta.dropna(subset=y_key_list + [x_key], inplace=True)
+    print("{} NA values-containing rows dropped; {} remaining.".format(
+        orig_len - len(dta), len(dta)
+    ))
+
     if y_highlight_key is None:
         if y_key_list is not None:
             assert len(y_key_list) > 0
