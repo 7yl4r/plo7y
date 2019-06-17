@@ -26,6 +26,7 @@ def ts_compare(
     y_highlight_key=None,
     # TODO: some of these args are generalizable...
     #       how best to share them between functions?
+    method=None,
     savefig=None,
     title=None,
     ylabel=None,
@@ -51,11 +52,29 @@ def ts_compare(
         filepath to save output, else show
     """
     dta = get_dataframe(dta)
+
     # watch out for mutually-exclusive params
     assert sum([
         y_key is None,
         y_key_list is None
     ]) == 1
+
+    # automatically pick "best" plotting method if needed
+    if method is None:
+        if y_group_by_key is not None:
+            method = 'group-by-ed'
+        elif y_highlight_key is None:
+            if y_key_list is not None:
+                assert len(y_key_list) > 0
+                method = 'key-list'
+            elif y_key is not None:
+                method = 'single-key'
+                dta.plot(x=x_key, y=y_key)
+            else:  # both None
+                method = 'all-y'
+                dta.plot(x=x_key, legend=legend)
+        else:
+            method = 'highlight'
 
     # timeseries rows must be in order
     dta.sort_values(x_key, inplace=True)
@@ -75,21 +94,22 @@ def ts_compare(
         orig_len - len(dta), len(dta)
     ))
 
-    if y_group_by_key is not None:
+    # do the plotting
+    if method == 'group-by-ed':
         dta.set_index(x_key, inplace=True)
         dta.groupby(y_group_by_key)[y_key].plot(x=x_key, y=y_key, legend=True)
-    elif y_highlight_key is None:
-        if y_key_list is not None:
-            assert len(y_key_list) > 0
-            _ts_compare_keylist(dta, x_key, y_key_list, figsize)
-        elif y_key is not None:
-            dta.plot(x=x_key, y=y_key)
-        else:  # both None
-            dta.plot(x=x_key, legend=legend)
-    else:
+    elif method == 'key-list':
+        _ts_compare_keylist(dta, x_key, y_key_list, figsize)
+    elif method == 'single-key':
+        dta.plot(x=x_key, y=y_key)
+    elif method == 'all-y':  # both None
+        dta.plot(x=x_key, legend=legend)
+    elif method == 'highlight':
         _ts_compare_highlight(
             dta, x_key, y_highlight_key, figsize, legend
         )
+    else:
+        raise ValueError('unknown plotting method "{}"'.format(method))
 
     if title is not None:
         plt.title(title)
