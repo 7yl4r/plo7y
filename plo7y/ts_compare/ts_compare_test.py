@@ -14,7 +14,7 @@ class Test_ts_compare(TestCase):
         """ test ts compare on obis occurence data """
         ts_compare(
             "test_data/obis.csv",
-            x_key="year",
+            x_key="eventDate",
             y_key_list=["X", "year"]
         )
 
@@ -22,7 +22,7 @@ class Test_ts_compare(TestCase):
         """ test ts compare on obis occurence data using y_group_by_key"""
         ts_compare(
             "test_data/obis.csv",
-            x_key="year",
+            x_key="eventDate",
             y_key="X",
             y_group_by_key="species",
         )

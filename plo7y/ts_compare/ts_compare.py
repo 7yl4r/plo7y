@@ -12,6 +12,8 @@ TODO: use image for huge N?
 
 """
 import matplotlib.pyplot as plt
+import pandas
+import seaborn
 
 from plo7y._internal.get_dataframe import get_dataframe
 
@@ -30,7 +32,8 @@ def ts_compare(
     savefig=None,
     title=None,
     ylabel=None,
-    figsize=(12, 8),
+    figsize=(10, 7.5),  # width, height in inches (default 100 dpi)
+    dpi=100,
     legend=True,
     **kwargs
 ):
@@ -59,10 +62,45 @@ def ts_compare(
         y_key_list is None
     ]) == 1
 
-    # automatically pick "best" plotting method if needed
+    # error on unhandled params
+    if dpi != 100:
+        raise NotImplementedError("non-default dpi values NYI")
+
+    # automatically pick best plotting method if needed
     if method is None:
         if y_group_by_key is not None:
-            method = 'group-by-ed'
+            assert y_key is not None
+            dta = dta.groupby([x_key, y_group_by_key]).agg({
+                y_group_by_key: 'first',
+                x_key: 'first',
+                y_key: sum,
+            })
+            # dta.set_index(
+            #     x_key, inplace=True, drop=False,
+            #     # verify_integrity=True
+            # )
+            # aggregate across new index
+            # dta = dta.groupby(level=0).agg(sum)
+            grouped_dta = dta.groupby(y_group_by_key)[y_key]
+            # === check for many overlapping points:
+            # x-axis data-points-per-inch (dppi)
+            x_dppi = grouped_dta.count().max() / figsize[0]
+
+            # TODO: also check for many non-unique y-values at few x-values
+            #    eg daily values binned to month.
+            #    For these we can use a violin plot.
+
+            if x_dppi > dpi/3:  # too dense
+                if len(grouped_dta) == 2:
+                    method = 'split-violin'
+                else:
+                    print(
+                        "WARN: plotting method to handle too many x-values"
+                        " not yet implemented; this plot might be ugly."
+                    )
+                    method = 'group-by-ed'
+            else:
+                method = 'group-by-ed'
         elif y_highlight_key is None:
             if y_key_list is not None:
                 assert len(y_key_list) > 0
@@ -75,6 +113,7 @@ def ts_compare(
                 dta.plot(x=x_key, legend=legend)
         else:
             method = 'highlight'
+    assert method is not None
 
     # timeseries rows must be in order
     dta.sort_values(x_key, inplace=True)
@@ -93,11 +132,16 @@ def ts_compare(
     print("{} NA values-containing rows dropped; {} remaining.".format(
         orig_len - len(dta), len(dta)
     ))
+    if len(dta) < 2:
+        raise ValueError("Too few valid rows to create plot.")
 
     # do the plotting
+    print('plotting w/ method "{}"'.format(method))
     if method == 'group-by-ed':
-        dta.set_index(x_key, inplace=True)
-        dta.groupby(y_group_by_key)[y_key].plot(x=x_key, y=y_key, legend=True)
+        grouped_dta.plot(
+            x=x_key, y=y_key, legend=True, figsize=figsize,
+            kind='line',
+        )
     elif method == 'key-list':
         _ts_compare_keylist(dta, x_key, y_key_list, figsize)
     elif method == 'single-key':
@@ -107,6 +151,22 @@ def ts_compare(
     elif method == 'highlight':
         _ts_compare_highlight(
             dta, x_key, y_highlight_key, figsize, legend
+        )
+    elif method == 'split-violin':
+        # while len(dta[x_key]) > :
+        dta.index = pandas.to_datetime(dta[x_key])
+
+        resample = dta.resample('48m').sum()[y_key]
+        dta['x_resampled'] = [
+            resample.index[resample.index.get_loc(
+                pandas.to_datetime(v), method='nearest'
+            )]
+            for v in dta[x_key]
+        ]
+        seaborn.violinplot(
+            x='x_resampled', y=y_key, hue=y_group_by_key, data=dta,
+            scale="count", inner="box",
+            split=True,
         )
     else:
         raise ValueError('unknown plotting method "{}"'.format(method))
