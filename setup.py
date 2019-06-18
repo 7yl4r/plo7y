@@ -4,7 +4,7 @@
 from setuptools import setup
 import io
 
-VERSION = '0.0.1'  # should match __version__ in PROJECT_NAME.__init__.py
+VERSION = '0.0.1'  # should match __version__ in plo7y.__init__.py
 
 
 # === long_description comes from README.md
@@ -39,8 +39,8 @@ _extras_require = {  # allows install w/ `pip install .[test]`
 }
 
 setup(
-    name='projectname',
-    description='short desc of projectname',
+    name='plo7y',
+    description='wrappers around python data viz organized by viz objective',
     url='https://github.com/7yl4r/plo7y',
     packages=[  # modules that are added to python when this is installed
         'plo7y',
