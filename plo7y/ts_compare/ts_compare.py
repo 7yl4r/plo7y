@@ -57,10 +57,11 @@ def ts_compare(
     dta = get_dataframe(dta)
 
     # watch out for mutually-exclusive params
-    assert sum([
+    if sum([
         y_key is None,
         y_key_list is None
-    ]) == 1
+    ]) != 1:
+        raise ValueError("y_key or y_key_list must be provided")
 
     # error on unhandled params
     if dpi != 100:
