@@ -8,10 +8,19 @@ def get_dataframe(data_thing):
     """
     # dataframe passthrough
     if type(data_thing) == pd.core.frame.DataFrame:
-        return data_thing
+        result = data_thing
     # csv file path
     elif data_thing.strip().endswith(".csv"):
+        print("loading file...")
         data = pd.read_csv(data_thing)
-        # drop any worthless columns
-        data.dropna(axis='columns', how='all', inplace=True)
-        return data
+        result = data
+
+    # === post-loading cleanup
+    # drop any worthless columns
+    result.dropna(axis='columns', how='all', inplace=True)
+
+    # === defensive programming checks
+    if len(result) < 1:
+        raise AssertionError("loaded dataframe has length of 0")
+
+    return result

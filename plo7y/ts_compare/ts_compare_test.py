@@ -26,3 +26,12 @@ class Test_ts_compare(TestCase):
             y_key="X",
             y_group_by_key="species",
         )
+
+    def test_obis_occurrence_empty(self):
+        """ test ts compare on 0-length obis occurence data"""
+        ts_compare(
+            "test_data/obis_empty.csv",
+            x_key="eventDate",
+            y_key="X",
+            y_group_by_key="species",
+        )
