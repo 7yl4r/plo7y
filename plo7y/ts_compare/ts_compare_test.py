@@ -15,7 +15,8 @@ class Test_ts_compare(TestCase):
         ts_compare(
             "test_data/obis.csv",
             x_key="eventDate",
-            y_key_list=["X", "year"]
+            y_key_list=["X", "year"],
+            savefig="/tmp/plo7y_test_obis_occurrence.png",
         )
 
     def test_obis_occurrence_group_by(self):
@@ -25,6 +26,7 @@ class Test_ts_compare(TestCase):
             x_key="eventDate",
             y_key="X",
             y_group_by_key="species",
+            savefig="/tmp/plo7y_test_obis_occurrence_group_by.png",
         )
 
     def test_obis_occurrence_empty(self):
@@ -35,4 +37,5 @@ class Test_ts_compare(TestCase):
                 x_key="eventDate",
                 y_key="X",
                 y_group_by_key="species",
+                savefig="/tmp/plo7y_test_obis_occurrence_empty.png",
             )
