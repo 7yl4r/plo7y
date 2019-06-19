@@ -71,21 +71,12 @@ def ts_compare(
     if method is None:
         if y_group_by_key is not None:
             assert y_key is not None
-            dta = dta.groupby([x_key, y_group_by_key]).agg({
+            x_dppi = len(dta.groupby(x_key)) / figsize[0]
+            grouped_dta = dta.groupby([y_group_by_key]).agg({
                 y_group_by_key: 'first',
                 x_key: 'first',
                 y_key: sum,
-            })
-            # dta.set_index(
-            #     x_key, inplace=True, drop=False,
-            #     # verify_integrity=True
-            # )
-            # aggregate across new index
-            # dta = dta.groupby(level=0).agg(sum)
-            grouped_dta = dta.groupby(y_group_by_key)[y_key]
-            # === check for many overlapping points:
-            # x-axis data-points-per-inch (dppi)
-            x_dppi = grouped_dta.count().max() / figsize[0]
+            })[y_key]
 
             # TODO: also check for many non-unique y-values at few x-values
             #    ie: ordered catagorical data.
@@ -196,8 +187,14 @@ def ts_compare(
             for v in dta[x_key]
         ]
 
-        # choose inner vizualization
-        if len(dta) < figsize[0]*200 and len(dta) < 10000:
+        print("counts in each group:")
+        print(dta[y_group_by_key].value_counts())
+        # TODO: assert these are evenly spread
+
+        # === choose inner vizualization
+        # NOTE: you may increase this max if you have a supercomputer
+        MAX_LINES_PLOTTABLE = 10000
+        if len(dta) < figsize[0]*200 and len(dta) < MAX_LINES_PLOTTABLE:
             inner_viz = "stick"
         else:
             inner_viz = "box"
@@ -205,6 +202,8 @@ def ts_compare(
         # choose amount of smoothing
         if len(dta) > 10000:
             bandwidth = 0.1
+        elif len(dta) > 5000:
+            bandwidth = 0.2
         elif len(dta) > 1000:
             bandwidth = 0.3
         else:
@@ -217,7 +216,7 @@ def ts_compare(
             inner=inner_viz, bw=bandwidth,
             split=True, cut=0
         )
-        axes.set_xticks([])
+        axes.set_xticks([])  # remove ticks b/c they look bad
         axes.set_xlabel('{} / {}'.format(dta[x_key][0], dta[x_key][-1]))
     else:
         raise ValueError('unknown plotting method "{}"'.format(method))
