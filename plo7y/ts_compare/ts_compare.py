@@ -55,6 +55,7 @@ def ts_compare(
         filepath to save output, else show
     """
     dta = get_dataframe(dta)
+    dta[y_key] = pandas.to_numeric(dta[y_key])
 
     # watch out for mutually-exclusive params
     if sum([
