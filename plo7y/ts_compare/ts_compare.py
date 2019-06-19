@@ -88,8 +88,11 @@ def ts_compare(
             x_dppi = grouped_dta.count().max() / figsize[0]
 
             # TODO: also check for many non-unique y-values at few x-values
-            #    eg daily values binned to month.
-            #    For these we can use a violin plot.
+            #    ie: ordered catagorical data.
+            #    eg: daily values binned to month.
+            #    For these we can use
+            #        if many values: violin plot
+            #        else not so many seaborn catplot
 
             if x_dppi > dpi/3:  # too dense
                 if len(grouped_dta) == 2:
@@ -205,7 +208,7 @@ def ts_compare(
         elif len(dta) > 1000:
             bandwidth = 0.3
         else:
-            bandwidth = None
+            bandwidth = 'scott'
 
         # do plot
         axes = seaborn.violinplot(
