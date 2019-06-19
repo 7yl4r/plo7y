@@ -112,10 +112,8 @@ def ts_compare(
                 method = 'key-list'
             elif y_key is not None:
                 method = 'single-key'
-                dta.plot(x=x_key, y=y_key)
             else:  # both None
                 method = 'all-y'
-                dta.plot(x=x_key, legend=legend)
         else:
             method = 'highlight'
     assert method is not None
