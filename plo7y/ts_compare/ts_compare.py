@@ -54,8 +54,13 @@ def ts_compare(
     savefig : str
         filepath to save output, else show
     """
+    # pre-checks & preproc
     dta = get_dataframe(dta)
-    dta[y_key] = pandas.to_numeric(dta[y_key])
+    if y_key is not None:
+        dta[y_key] = pandas.to_numeric(dta[y_key])
+
+    assert x_key is not None
+    assert dta[x_key].nunique() > 1
 
     # watch out for mutually-exclusive params
     if sum([
