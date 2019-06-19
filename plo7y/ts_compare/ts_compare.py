@@ -13,9 +13,13 @@ TODO: use image for huge N?
 """
 import matplotlib.pyplot as plt
 import pandas
-import seaborn
 
 from plo7y._internal.get_dataframe import get_dataframe
+from plo7y._plots.line.ts_compare_keylist import ts_compare_keylist
+from plo7y._plots.line.ts_compare_highlight import ts_compare_highlight
+from plo7y._plots.line.ts_compare_groupby import ts_compare_groupby
+from plo7y._plots.violin.ts_downsample_compare_two \
+    import ts_downsample_compare_two
 
 
 def ts_compare(
@@ -139,91 +143,19 @@ def ts_compare(
     # do the plotting
     print('plotting w/ method "{}"'.format(method))
     if method == 'group-by-ed':
-        grouped_dta.plot(
-            x=x_key, y=y_key, legend=True, figsize=figsize,
-            kind='line',
-        )
+        ts_compare_groupby(grouped_dta, x_key, y_key, figsize)
     elif method == 'key-list':
-        _ts_compare_keylist(dta, x_key, y_key_list, figsize)
+        ts_compare_keylist(dta, x_key, y_key_list, figsize)
     elif method == 'single-key':
         dta.plot(x=x_key, y=y_key)
     elif method == 'all-y':  # both None
         dta.plot(x=x_key, legend=legend)
     elif method == 'highlight':
-        _ts_compare_highlight(
+        ts_compare_highlight(
             dta, x_key, y_highlight_key, figsize, legend
         )
     elif method == 'split-violin':
-        dta.index = pandas.to_datetime(dta[x_key])
-        # === downsample until we find a reasonable number of violins
-        #    since I wasn't sure how to calculate the frequency of the
-        #    existing dataset this brute-forces by starting at a huge
-        #    resampling period & moving down until we get a good number
-        #    of violins.
-        PERIODS = [  # typical data frequency periods sorted descending
-            '1200m', '120m', '60m', '24m', '12m', '6m',
-            '120d', '90d', '30d', '14d', '7d', '1d',
-        ]
-        # ideal number of violins should be > LEN_MIN && < LEN_MAX
-        LEN_MIN = 5
-        LEN_MAX = 9
-        assert len(dta) > LEN_MAX
-        resample = []
-        period_n = 0
-        while len(resample) < LEN_MIN:
-            new_period = PERIODS[period_n]
-            print('resampling to frequency 1/{}...'.format(new_period))
-            resample = dta.resample(new_period)
-            # indexError here means we need to add smaller periods
-            #     at the end of the list
-            period_n += 1
-        if len(resample) > LEN_MAX:
-            raise AssertionError(
-                "Oops, we went too far; "
-                " more periods are needed between the last two."
-            )
-        else:
-            print("success. Resampled into {} bins.".format(len(resample)))
-
-        resample = resample.sum()[y_key]
-        dta['x_resampled'] = [
-            resample.index[resample.index.get_loc(
-                pandas.to_datetime(v), method='nearest'
-            )]
-            for v in dta[x_key]
-        ]
-
-        print("counts in each group:")
-        print(dta[y_group_by_key].value_counts())
-        # TODO: assert these are evenly spread
-
-        # === choose inner vizualization
-        # NOTE: you may increase this max if you have a supercomputer
-        MAX_LINES_PLOTTABLE = 10000
-        if len(dta) < figsize[0]*200 and len(dta) < MAX_LINES_PLOTTABLE:
-            inner_viz = "stick"
-        else:
-            inner_viz = "box"
-
-        # choose amount of smoothing
-        if len(dta) > 10000:
-            bandwidth = 0.1
-        elif len(dta) > 5000:
-            bandwidth = 0.2
-        elif len(dta) > 1000:
-            bandwidth = 0.3
-        else:
-            bandwidth = 'scott'
-
-        # do plot
-        axes = seaborn.violinplot(
-            x='x_resampled', y=y_key, hue=y_group_by_key, data=dta,
-            scale="count",
-            inner=inner_viz, bw=bandwidth,
-            split=True, cut=0
-        )
-        axes.set_xticks([])  # remove ticks b/c they look bad
-        axes.set_xlabel('{} / {}'.format(dta[x_key][0], dta[x_key][-1]))
+        ts_downsample_compare_two(dta, x_key, y_key, y_group_by_key, figsize)
     else:
         raise ValueError('unknown plotting method "{}"'.format(method))
 
@@ -236,28 +168,3 @@ def ts_compare(
         plt.savefig(savefig, bbox_inches='tight')
     else:
         plt.show()
-
-
-def _ts_compare_keylist(dta, x_key, y_key_list, figsize):
-    """Compare several timeseries"""
-    dta.plot(x=x_key, y=y_key_list[0])
-    dta[y_key_list].plot(
-        figsize=figsize
-    )
-
-
-def _ts_compare_highlight(
-    dta, x_key, y_highlight_key, figsize, legend
-):
-    """How does the highlighted series differ from the others?"""
-    axis = dta.plot(
-        x=x_key, legend=legend, figsize=figsize,
-        colormap='Pastel2',
-        style=[':']*len(dta)
-    )
-    dta.plot(
-        x=x_key, y=y_highlight_key, legend=legend, figsize=figsize,
-        colormap='hsv',
-        style=['-']*len(dta),
-        ax=axis
-    )
