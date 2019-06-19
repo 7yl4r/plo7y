@@ -22,6 +22,15 @@ from plo7y._plots.violin.ts_downsample_compare_two \
     import ts_downsample_compare_two
 
 
+def x_too_dense(dta, x_key, y_key, y_group_by_key, figsize, dpi):
+    x_dppi = len(dta.groupby(x_key)) / figsize[0]
+
+    if x_dppi > dpi/3:  # too dense
+        return True
+    else:
+        return False
+
+
 def ts_compare(
     dta,
     *args,
@@ -81,41 +90,45 @@ def ts_compare(
     if method is None:
         if y_group_by_key is not None:
             assert y_key is not None
-            x_dppi = len(dta.groupby(x_key)) / figsize[0]
             grouped_dta = dta.groupby([y_group_by_key]).agg({
                 y_group_by_key: 'first',
                 x_key: 'first',
                 y_key: sum,
             })[y_key]
+            if (
+                x_too_dense(
+                    dta, x_key, y_key, y_group_by_key, figsize, dpi
+                ) and
+                len(grouped_dta) == 2
+            ):
+                # TODO: also check for many non-unique y-values at few x-values
+                #    ie: ordered catagorical data.
+                #    eg: daily values binned to month.
+                #    For these we can use
+                #        if many values: violin plot
+                #        else not so many seaborn catplot
 
-            # TODO: also check for many non-unique y-values at few x-values
-            #    ie: ordered catagorical data.
-            #    eg: daily values binned to month.
-            #    For these we can use
-            #        if many values: violin plot
-            #        else not so many seaborn catplot
-
-            if x_dppi > dpi/3:  # too dense
-                if len(grouped_dta) == 2:
                     method = 'split-violin'
-                else:
-                    print(
-                        "WARN: plotting method to handle too many x-values"
-                        " not yet implemented; this plot might be ugly."
-                    )
-                    method = 'group-by-ed'
+            elif x_too_dense(
+                dta, x_key, y_key, y_group_by_key, figsize, dpi
+            ):
+                print(
+                    "WARN: plotting method to handle too many x-values"
+                    " not yet implemented; this plot might be ugly."
+                )
+                method = 'group-by-ed'
             else:
                 method = 'group-by-ed'
-        elif y_highlight_key is None:
-            if y_key_list is not None:
-                assert len(y_key_list) > 0
-                method = 'key-list'
-            elif y_key is not None:
-                method = 'single-key'
-            else:  # both None
-                method = 'all-y'
-        else:
+        elif y_highlight_key is not None:
             method = 'highlight'
+        elif y_key_list is not None:
+            assert len(y_key_list) > 0
+            method = 'key-list'
+        elif y_key is not None:
+            method = 'single-key'
+        else:
+            method = 'all-y'
+
     assert method is not None
 
     # timeseries rows must be in order
@@ -164,5 +177,6 @@ def ts_compare(
 
     if savefig is not None:
         plt.savefig(savefig, bbox_inches='tight')
+        plt.clf()
     else:
         plt.show()
