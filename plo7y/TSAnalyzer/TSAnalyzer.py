@@ -5,8 +5,6 @@ from functools import lru_cache
 
 
 class TSAnalyzer():
-    # TODO: is_evenly_spaced
-    # TODO: is
     # TODO: trend & frequency analysis
     # TODO: normality of residuals
     # TODO: autocorrelation
