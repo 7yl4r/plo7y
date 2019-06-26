@@ -47,5 +47,34 @@ _plotter_metadata = {
 }
 ```
 
-### definitions, terms, abbreviations
+### report usage
+Reports can be written as [parameterized .Rmd documents](https://bookdown.org/yihui/rmarkdown/parameterized-reports.html), interactive python scripts, or
+(assuming these exist) parameterized jupyter notebooks.
+
+No Jupyter notebook reports exist yet, but they are theoretically possible.
+
+Interactive python scripts should be called from a python console or executed from the command line as usual.
+
+Parameterized `.Rmd` reports can be included as "child" chunks within a parent `.Rmd`.
+Because the path of the child may not be easily known, it is recommended to instead use the `rmarkdown::render` function directly within an R console, script, or a parent `.Rmd` file's chunk.
+An example of this usage is below:
+
+```r
+# find the path of plo7y module:
+plo7y_path = system(
+    "python -c 'import plo7y; print(plo7y.__file__.split(\"/__init__.py\")[0])'",
+    intern=TRUE
+)
+# append the name of the report .Rmd
+report_path = paste(plo7y_path, "/reporters/ts_compare.Rmd", sep="")
+# render the report here
+rmarkdown::render(report_path, params = list(
+  year = 2017,
+  region = "Asia",
+  printcode = FALSE,
+  file = "file2.csv"
+))
+```
+
+## definitions, terms, abbreviations
 * ts: timeseries
