@@ -83,7 +83,7 @@ def ts_compare(
 
     # do the plotting
     print('plotting w/ method "{}"'.format(method))
-    method(dta)
+    method(dta=dta)
 
     if kwargs.get("title") is not None:
         plt.title(kwargs.get("title"))

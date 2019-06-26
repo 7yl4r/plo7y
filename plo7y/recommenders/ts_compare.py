@@ -11,6 +11,8 @@ TODO: use horizonplots for large N?
 TODO: use image for huge N?
 
 """
+from functools import partial
+
 import pandas
 
 from plo7y._internal.get_dataframe import get_dataframe
@@ -72,7 +74,9 @@ def recommend(
         raise NotImplementedError("non-default dpi values NYI")
 
     ts_analyzer = TSAnalyzer(dta)
-    # automatically pick best plotting method if needed
+
+    # automatically pick best plotting method, return a partial which wraps
+    #  the method & injects the arguments properly.
     if (
         y_group_by_key is not None and
         ts_analyzer.is_x_too_dense(
@@ -87,9 +91,10 @@ def recommend(
         #    For these we can use
         #        if many values: violin plot
         #        else not so many seaborn catplot
-
-        return lambda d: ts_downsample_compare_two(
-            d, x_key, y_key, y_group_by_key, figsize
+        return partial(
+            ts_downsample_compare_two,
+            x_key=x_key, y_key=y_key, y_group_by_key=y_group_by_key,
+            figsize=figsize
         )
     elif (
         y_group_by_key is not None and
@@ -99,27 +104,35 @@ def recommend(
             "WARN: plotting method to handle too many x-values"
             " not yet implemented; this plot might be ugly."
         )
-        return lambda d: ts_compare_groupby(
-            ts_analyzer.grouped_dta(y_group_by_key, x_key, y_key),
-            x_key, y_key, figsize
+        return partial(
+            grouped_dta=ts_analyzer.grouped_dta(y_group_by_key, x_key, y_key),
+            ts_compare_groupby=ts_compare_groupby,
+            x_key=x_key, y_key=y_key, figsize=figsize
         )
     elif (
             y_group_by_key is not None
     ):
-        return lambda d: ts_compare_groupby(
-            ts_analyzer.grouped_dta(y_group_by_key, x_key, y_key),
-            x_key, y_key, y_group_by_key, figsize
+        return partial(
+            ts_compare_groupby,
+            grouped_dta=ts_analyzer.grouped_dta(y_group_by_key, x_key, y_key),
+            x_key=x_key, y_key=y_key, y_group_by_key=y_group_by_key,
+            figsize=figsize
         )
     elif y_highlight_key is not None:
-        return lambda d: ts_compare_highlight(
-            d, x_key, y_highlight_key, figsize, legend
+        return partial(
+            ts_compare_highlight,
+            x_key=x_key, y_highlight_key=y_highlight_key, figsize=figsize,
+            legend=legend
         )
     elif y_key_list is not None:
         assert len(y_key_list) > 0
-        return lambda d: ts_compare_keylist(d, x_key, y_key_list, figsize)
+        return partial(
+            ts_compare_keylist, x_key=x_key, y_key_list=y_key_list,
+            figsize=figsize
+        )
     elif y_key is not None:
-        return lambda d: d.plot(x=x_key, y=y_key)
+        return partial(dta.plot, x=x_key, y=y_key)
     else:
-        return lambda d: d.plot(x=x_key, legend=legend)
+        return partial(dta.plot, x=x_key, legend=legend)
 
     raise AssertionError("method lambda not returned")
