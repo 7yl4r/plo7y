@@ -16,16 +16,24 @@ import pandas
 from plo7y._internal.get_dataframe import get_dataframe
 from plo7y.testers.TSAnalyzer.TSAnalyzer import TSAnalyzer
 
+from plo7y.plotters.ts_line_compare_keylist import ts_compare_keylist
+from plo7y.plotters.ts_line_compare_highlight import ts_compare_highlight
+from plo7y.plotters.ts_line_compare_groupby import ts_compare_groupby
+from plo7y.plotters.ts_two_violin_compare_downsample \
+    import ts_downsample_compare_two
+
 
 def recommend(
     dta,
-    y_key,
-    x_key,
-    y_key_list,
+    *args,
+    y_key=None,
+    x_key=None,
+    y_key_list=None,
     dpi,
-    y_group_by_key,
+    y_group_by_key=None,
     figsize,
-    y_highlight_key
+    y_highlight_key=None,
+    legend
 ):
     """
     Parameters
@@ -80,7 +88,9 @@ def recommend(
         #        if many values: violin plot
         #        else not so many seaborn catplot
 
-        method = 'split-violin'
+        return lambda d: ts_downsample_compare_two(
+            d, x_key, y_key, y_group_by_key, figsize
+        )
     elif (
         y_group_by_key is not None and
         ts_analyzer.is_x_too_dense(x_key, y_key, y_group_by_key, figsize, dpi)
@@ -89,20 +99,27 @@ def recommend(
             "WARN: plotting method to handle too many x-values"
             " not yet implemented; this plot might be ugly."
         )
-        method = 'group-by-ed'
+        return lambda d: ts_compare_groupby(
+            ts_analyzer.grouped_dta(y_group_by_key, x_key, y_key),
+            x_key, y_key, figsize
+        )
     elif (
             y_group_by_key is not None
     ):
-        method = 'group-by-ed'
+        return lambda d: ts_compare_groupby(
+            ts_analyzer.grouped_dta(y_group_by_key, x_key, y_key),
+            x_key, y_key, y_group_by_key, figsize
+        )
     elif y_highlight_key is not None:
-        method = 'highlight'
+        return lambda d: ts_compare_highlight(
+            d, x_key, y_highlight_key, figsize, legend
+        )
     elif y_key_list is not None:
         assert len(y_key_list) > 0
-        method = 'key-list'
+        return lambda d: ts_compare_keylist(d, x_key, y_key_list, figsize)
     elif y_key is not None:
-        method = 'single-key'
+        return lambda d: d.plot(x=x_key, y=y_key)
     else:
-        method = 'all-y'
+        return lambda d: d.plot(x=x_key, legend=legend)
 
-    assert method is not None
-    return method
+    raise AssertionError("method lambda not returned")

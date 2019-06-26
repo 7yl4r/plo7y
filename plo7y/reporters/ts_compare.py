@@ -11,11 +11,6 @@ import matplotlib.pyplot as plt
 
 from plo7y._internal.get_dataframe import get_dataframe
 from plo7y.recommenders.ts_compare import recommend
-from plo7y.plotters.ts_line_compare_keylist import ts_compare_keylist
-from plo7y.plotters.ts_line_compare_highlight import ts_compare_highlight
-from plo7y.plotters.ts_line_compare_groupby import ts_compare_groupby
-from plo7y.plotters.ts_two_violin_compare_downsample \
-    import ts_downsample_compare_two
 
 
 def x_too_dense(dta, x_key, y_key, y_group_by_key, figsize, dpi):
@@ -29,21 +24,10 @@ def x_too_dense(dta, x_key, y_key, y_group_by_key, figsize, dpi):
 
 def ts_compare(
     dta,
-    *args,
-    x_key=None,
-    y_key=None,
-    y_key_list=None,
-    y_group_by_key=None,
-    y_highlight_key=None,
-    # TODO: some of these args are generalizable...
-    #       how best to share them between functions?
-    method=None,
-    savefig=None,
-    title=None,
-    ylabel=None,
     figsize=(10, 7.5),  # width, height in inches (default 100 dpi)
     dpi=100,
     legend=True,
+    savefig=None,
     **kwargs
 ):
     """
@@ -64,27 +48,28 @@ def ts_compare(
         filepath to save output, else show
     """
     dta = get_dataframe(dta)
-    if method is None:
+    if kwargs.get("method") is None or kwargs.get("method_kwargs") is None:
         method = recommend(
             dta,
-            y_key,
-            x_key,
-            y_key_list,
-            dpi,
-            y_group_by_key,
-            figsize,
-            y_highlight_key
+            dpi=dpi,
+            figsize=figsize,
+            legend=legend,
+            **kwargs
         )
 
     # timeseries rows must be in order
-    dta.sort_values(x_key, inplace=True)
+    dta.sort_values(kwargs.get("x_key"), inplace=True)
 
     # === drop missing values:
     orig_len = len(dta)
-    if y_key_list:
-        col_list = y_key_list + [x_key]
-    elif y_group_by_key:
-        col_list = [y_group_by_key, x_key, y_key]
+    if kwargs.get("y_key_list") is not None:
+        col_list = kwargs.get("y_key_list") + [kwargs.get("x_key")]
+    elif kwargs.get("y_group_by_key") is not None:
+        col_list = [
+            kwargs.get("y_group_by_key"),
+            kwargs.get("x_key"),
+            kwargs.get("y_key")
+        ]
     else:
         raise ValueError(
             "Must pass multiple y-cols or give group-by col."
@@ -98,32 +83,12 @@ def ts_compare(
 
     # do the plotting
     print('plotting w/ method "{}"'.format(method))
-    if method == 'group-by-ed':
-        grouped_dta = dta.groupby([y_group_by_key]).agg({
-            y_group_by_key: 'first',
-            x_key: 'first',
-            y_key: sum,
-        })[y_key]
-        ts_compare_groupby(grouped_dta, x_key, y_key, figsize)
-    elif method == 'key-list':
-        ts_compare_keylist(dta, x_key, y_key_list, figsize)
-    elif method == 'single-key':
-        dta.plot(x=x_key, y=y_key)
-    elif method == 'all-y':  # both None
-        dta.plot(x=x_key, legend=legend)
-    elif method == 'highlight':
-        ts_compare_highlight(
-            dta, x_key, y_highlight_key, figsize, legend
-        )
-    elif method == 'split-violin':
-        ts_downsample_compare_two(dta, x_key, y_key, y_group_by_key, figsize)
-    else:
-        raise ValueError('unknown plotting method "{}"'.format(method))
+    method(dta)
 
-    if title is not None:
-        plt.title(title)
-    if ylabel is not None:
-        plt.ylabel(ylabel)
+    if kwargs.get("title") is not None:
+        plt.title(kwargs.get("title"))
+    if kwargs.get("ylabel") is not None:
+        plt.ylabel(kwargs.get("ylabel"))
 
     if savefig is not None:
         plt.savefig(savefig, bbox_inches='tight')
