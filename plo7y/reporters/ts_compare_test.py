@@ -7,7 +7,7 @@ NOTE: many of these tests only test that the plotting methods
 import sys
 from unittest import TestCase
 
-from plo7y.recommenders.ts_compare import ts_compare
+from plo7y.reporters.ts_compare import ts_compare
 
 
 class Test_ts_compare(TestCase):
