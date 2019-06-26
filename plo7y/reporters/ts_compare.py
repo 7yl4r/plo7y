@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import pandas
 
 from plo7y._internal.get_dataframe import get_dataframe
+from plo7y.recommenders.ts_compare import recommend
 from plo7y.plotters.ts_line_compare_keylist import ts_compare_keylist
 from plo7y.plotters.ts_line_compare_highlight import ts_compare_highlight
 from plo7y.plotters.ts_line_compare_groupby import ts_compare_groupby
@@ -86,50 +87,17 @@ def ts_compare(
     if dpi != 100:
         raise NotImplementedError("non-default dpi values NYI")
 
-    # automatically pick best plotting method if needed
     if method is None:
-        if y_group_by_key is not None:
-            assert y_key is not None
-            grouped_dta = dta.groupby([y_group_by_key]).agg({
-                y_group_by_key: 'first',
-                x_key: 'first',
-                y_key: sum,
-            })[y_key]
-            if (
-                x_too_dense(
-                    dta, x_key, y_key, y_group_by_key, figsize, dpi
-                ) and
-                len(grouped_dta) == 2
-            ):
-                # TODO: also check for many non-unique y-values at few x-values
-                #    ie: ordered catagorical data.
-                #    eg: daily values binned to month.
-                #    For these we can use
-                #        if many values: violin plot
-                #        else not so many seaborn catplot
-
-                    method = 'split-violin'
-            elif x_too_dense(
-                dta, x_key, y_key, y_group_by_key, figsize, dpi
-            ):
-                print(
-                    "WARN: plotting method to handle too many x-values"
-                    " not yet implemented; this plot might be ugly."
-                )
-                method = 'group-by-ed'
-            else:
-                method = 'group-by-ed'
-        elif y_highlight_key is not None:
-            method = 'highlight'
-        elif y_key_list is not None:
-            assert len(y_key_list) > 0
-            method = 'key-list'
-        elif y_key is not None:
-            method = 'single-key'
-        else:
-            method = 'all-y'
-
-    assert method is not None
+        method = recommend(
+            dta,
+            y_key,
+            x_key,
+            y_key_list,
+            dpi,
+            y_group_by_key,
+            figsize,
+            y_highlight_key
+        )
 
     # timeseries rows must be in order
     dta.sort_values(x_key, inplace=True)
@@ -154,6 +122,11 @@ def ts_compare(
     # do the plotting
     print('plotting w/ method "{}"'.format(method))
     if method == 'group-by-ed':
+        grouped_dta = dta.groupby([y_group_by_key]).agg({
+            y_group_by_key: 'first',
+            x_key: 'first',
+            y_key: sum,
+        })[y_key]
         ts_compare_groupby(grouped_dta, x_key, y_key, figsize)
     elif method == 'key-list':
         ts_compare_keylist(dta, x_key, y_key_list, figsize)
