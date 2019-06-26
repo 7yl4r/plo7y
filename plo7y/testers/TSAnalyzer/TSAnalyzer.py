@@ -32,3 +32,11 @@ class TSAnalyzer():
                 return False
         else:
             return True
+
+    @lru_cache()
+    def grouped_dta(self, y_group_by_key, x_key, y_key):
+        return self.df.groupby([y_group_by_key]).agg({
+            y_group_by_key: 'first',
+            x_key: 'first',
+            y_key: sum,
+        })[y_key]

@@ -14,6 +14,7 @@ TODO: use image for huge N?
 import pandas
 
 from plo7y._internal.get_dataframe import get_dataframe
+from plo7y.testers.TSAnalyzer.TSAnalyzer import TSAnalyzer
 
 
 def x_too_dense(dta, x_key, y_key, y_group_by_key, figsize, dpi):
@@ -71,38 +72,37 @@ def recommend(
     if dpi != 100:
         raise NotImplementedError("non-default dpi values NYI")
 
+    ts_analyzer = TSAnalyzer(dta)
     # automatically pick best plotting method if needed
-    if y_group_by_key is not None:
-        assert y_key is not None
-        grouped_dta = dta.groupby([y_group_by_key]).agg({
-            y_group_by_key: 'first',
-            x_key: 'first',
-            y_key: sum,
-        })[y_key]
-        if (
-            x_too_dense(
-                dta, x_key, y_key, y_group_by_key, figsize, dpi
-            ) and
-            len(grouped_dta) == 2
-        ):
-            # TODO: also check for many non-unique y-values at few x-values
-            #    ie: ordered catagorical data.
-            #    eg: daily values binned to month.
-            #    For these we can use
-            #        if many values: violin plot
-            #        else not so many seaborn catplot
-
-                method = 'split-violin'
-        elif x_too_dense(
+    if (
+        y_group_by_key is not None and
+        x_too_dense(
             dta, x_key, y_key, y_group_by_key, figsize, dpi
-        ):
-            print(
-                "WARN: plotting method to handle too many x-values"
-                " not yet implemented; this plot might be ugly."
-            )
-            method = 'group-by-ed'
-        else:
-            method = 'group-by-ed'
+        ) and
+        len(ts_analyzer.grouped_dta(y_group_by_key, x_key, y_key)) == 2
+    ):
+        assert y_key is not None
+        # TODO: also check for many non-unique y-values at few x-values
+        #    ie: ordered catagorical data.
+        #    eg: daily values binned to month.
+        #    For these we can use
+        #        if many values: violin plot
+        #        else not so many seaborn catplot
+
+        method = 'split-violin'
+    elif (
+        y_group_by_key is not None and
+        x_too_dense(dta, x_key, y_key, y_group_by_key, figsize, dpi)
+    ):
+        print(
+            "WARN: plotting method to handle too many x-values"
+            " not yet implemented; this plot might be ugly."
+        )
+        method = 'group-by-ed'
+    elif (
+            y_group_by_key is not None
+    ):
+        method = 'group-by-ed'
     elif y_highlight_key is not None:
         method = 'highlight'
     elif y_key_list is not None:
