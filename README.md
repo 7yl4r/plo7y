@@ -23,13 +23,15 @@ This concept is meant to expand on [this blog post](http://7ych.blogspot.com/201
 ### directory structure
 ```
 /plo7y/
-    /plotters/
-        /bar_multiple_stacked
-        /bar_multiple_horiz
-        /scatter_single_series
-    /recommenders/
-        /ts_compare
-        /ts_seasonality
+    /plotters/  # plot implementations
+        /{plot-type-key}.py
+    /recommenders/  # plotting method suggesters
+        /{vizualization-goal}.py
+    /testers/  # specific statistical tests
+        /{data_type}Analyzer.py
+        /_commmon/{generalizable_test_name}.py
+    /reporters/  # reports (TODO: should be Rmd or ipynb?)
+        /{report-goal}.py
 ```
 
 ### plotter metadata
