@@ -51,10 +51,13 @@ _plotter_metadata = {
 Reports can be written as [parameterized .Rmd documents](https://bookdown.org/yihui/rmarkdown/parameterized-reports.html), interactive python scripts, or
 (assuming these exist) parameterized jupyter notebooks.
 
+#### jupyter reports
 No Jupyter notebook reports exist yet, but they are theoretically possible.
 
+#### py script reports
 Interactive python scripts should be called from a python console or executed from the command line as usual.
 
+#### R markdown reports
 Parameterized `.Rmd` reports can be included as "child" chunks within a parent `.Rmd`.
 Because the path of the child may not be easily known, it is recommended to instead use the `rmarkdown::render` function directly within an R console, script, or a parent `.Rmd` file's chunk.
 An example of this usage is below:
