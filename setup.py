@@ -4,7 +4,7 @@
 from setuptools import setup
 import io
 
-VERSION = '0.0.1'  # should match __version__ in plo7y.__init__.py
+VERSION = '0.1.0'  # should match __version__ in plo7y.__init__.py
 
 
 # === long_description comes from README.md

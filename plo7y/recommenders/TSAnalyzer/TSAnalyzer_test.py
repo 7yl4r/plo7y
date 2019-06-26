@@ -5,7 +5,7 @@ from unittest import TestCase
 import pandas as pd
 import io
 
-from plo7y.TSAnalyzer.TSAnalyzer import TSAnalyzer
+from plo7y.recommenders.TSAnalyzer.TSAnalyzer import TSAnalyzer
 
 
 class Test_is_evenly_spaced(TestCase):

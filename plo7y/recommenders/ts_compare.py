@@ -15,10 +15,10 @@ import matplotlib.pyplot as plt
 import pandas
 
 from plo7y._internal.get_dataframe import get_dataframe
-from plo7y._plots.line.ts_compare_keylist import ts_compare_keylist
-from plo7y._plots.line.ts_compare_highlight import ts_compare_highlight
-from plo7y._plots.line.ts_compare_groupby import ts_compare_groupby
-from plo7y._plots.violin.ts_downsample_compare_two \
+from plo7y.plotters.ts_line_compare_keylist import ts_compare_keylist
+from plo7y.plotters.ts_line_compare_highlight import ts_compare_highlight
+from plo7y.plotters.ts_line_compare_groupby import ts_compare_groupby
+from plo7y.plotters.ts_two_violin_compare_downsample \
     import ts_downsample_compare_two
 
 
