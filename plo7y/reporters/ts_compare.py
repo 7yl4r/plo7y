@@ -48,7 +48,7 @@ def ts_compare(
         filepath to save output, else show
     """
     dta = get_dataframe(dta)
-    if kwargs.get("method") is None or kwargs.get("method_kwargs") is None:
+    if kwargs.get("method") is None:
         method = recommend(
             dta,
             dpi=dpi,
