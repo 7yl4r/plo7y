@@ -8,7 +8,6 @@ Examples:
 * temperatures in two locations
 """
 import matplotlib.pyplot as plt
-import pandas
 
 from plo7y._internal.get_dataframe import get_dataframe
 from plo7y.recommenders.ts_compare import recommend
