@@ -40,3 +40,12 @@ class TSAnalyzer():
             x_key: 'first',
             y_key: sum,
         })[y_key]
+
+    @lru_cache()
+    def is_x_too_dense(self, x_key, y_key, y_group_by_key, figsize, dpi):
+        x_dppi = len(self.df.groupby(x_key)) / figsize[0]
+
+        if x_dppi > dpi/3:  # too dense
+            return True
+        else:
+            return False

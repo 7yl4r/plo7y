@@ -17,15 +17,6 @@ from plo7y._internal.get_dataframe import get_dataframe
 from plo7y.testers.TSAnalyzer.TSAnalyzer import TSAnalyzer
 
 
-def x_too_dense(dta, x_key, y_key, y_group_by_key, figsize, dpi):
-    x_dppi = len(dta.groupby(x_key)) / figsize[0]
-
-    if x_dppi > dpi/3:  # too dense
-        return True
-    else:
-        return False
-
-
 def recommend(
     dta,
     y_key,
@@ -76,8 +67,8 @@ def recommend(
     # automatically pick best plotting method if needed
     if (
         y_group_by_key is not None and
-        x_too_dense(
-            dta, x_key, y_key, y_group_by_key, figsize, dpi
+        ts_analyzer.is_x_too_dense(
+            x_key, y_key, y_group_by_key, figsize, dpi
         ) and
         len(ts_analyzer.grouped_dta(y_group_by_key, x_key, y_key)) == 2
     ):
@@ -92,7 +83,7 @@ def recommend(
         method = 'split-violin'
     elif (
         y_group_by_key is not None and
-        x_too_dense(dta, x_key, y_key, y_group_by_key, figsize, dpi)
+        ts_analyzer.is_x_too_dense(x_key, y_key, y_group_by_key, figsize, dpi)
     ):
         print(
             "WARN: plotting method to handle too many x-values"

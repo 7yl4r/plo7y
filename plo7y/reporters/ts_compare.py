@@ -64,25 +64,7 @@ def ts_compare(
     savefig : str
         filepath to save output, else show
     """
-    # pre-checks & preproc
     dta = get_dataframe(dta)
-    if y_key is not None:
-        dta[y_key] = pandas.to_numeric(dta[y_key])
-
-    assert x_key is not None
-    assert dta[x_key].nunique() > 1
-
-    # watch out for mutually-exclusive params
-    if sum([
-        y_key is None,
-        y_key_list is None
-    ]) != 1:
-        raise ValueError("y_key or y_key_list must be provided")
-
-    # error on unhandled params
-    if dpi != 100:
-        raise NotImplementedError("non-default dpi values NYI")
-
     if method is None:
         method = recommend(
             dta,

@@ -47,6 +47,8 @@ _plotter_metadata = {
 }
 ```
 
+This metadata can be used by recommender methods to choose the ideal plotting method.
+
 ### report usage
 Reports can be written as [parameterized .Rmd documents](https://bookdown.org/yihui/rmarkdown/parameterized-reports.html), interactive python scripts, or
 (assuming these exist) parameterized jupyter notebooks.
