@@ -1,4 +1,6 @@
 # plo7y
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2F7yl4r%2Fplo7y.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2F7yl4r%2Fplo7y?ref=badge_shield)
+
 `plo7y` is a collection of wrappers around python data visualizations organized by the goal, objective, or question relevant to the visualization.
 
 ----------------------------------------------------------------------------
@@ -83,3 +85,7 @@ rmarkdown::render(report_path, params = list(
 
 ## definitions, terms, abbreviations
 * ts: timeseries
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2F7yl4r%2Fplo7y.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2F7yl4r%2Fplo7y?ref=badge_large)
