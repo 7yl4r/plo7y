@@ -11,14 +11,43 @@ This concept is meant to expand on [this blog post](http://7ych.blogspot.com/201
 
 ### rules/assumptions
 * all data inputs should be .csv files (with headers?)?
-* all viz outputs should be .hmtl?
+*
 
-### Abstract method types
-* **plot type**: string used as a "key" to identify a plot. eg "bar", "pie", "scatter".
-* **recommender**: computes statistics & returns string representing suggested plot type
-* **plotter**: implements a plot type
+### Definitions
+* *ts*: timeseries
+* **plot type**:
+    - string used as a "key" to identify a plot. eg "bar", "pie", "scatter".
+* **plot metadata**
+    - dict containing keys/tags and values to characterize a **plot type** and/or a **plotter** implementation.
+    - **plotters** are described by a structured set of metadata in a dict.
+        Example:
+
+        ```
+        _plotter_metadata = {
+            "data_type": "timeseries",
+            "n_data_min": 2,
+            "n_data_max": 12,
+            "tags": ["line", "color", "scatter"],
+        }
+        ```
+    - This metadata can be used by recommender methods to choose the ideal plotting method.
+#### Abstract "method types"
+* **recommender**:
+    - computes statistics & returns string representing suggested plot type
+    - _input_ : data & **plot metadata** of all plots to consider
+    - _output_: identification of **plot type** and **plotter** implementation to use
+* **plotter**:
+    - implements a **plot type**
+    - characterized by **plot metadata** dict
+    - _input_ : data & plot kwargs
+    - _output_: .html, image, or other plot representation
+        * (?) all viz outputs should be .hmtl (?)
 * **tester**: performs specific statistical test for **recommenders**
+    - _input_ : data & statistical kwargs
+    - _output_: statistical test results as... (?)dict(?)
 * **reporter**: verbose versions of **recommender** which output reports supporting the conclusion
+    - _input_ : data & kwargs
+    - _output_: report as .html, .Rmd, other?
 
 ### directory structure
 ```
@@ -34,20 +63,6 @@ This concept is meant to expand on [this blog post](http://7ych.blogspot.com/201
         /{report-goal}.py
 ```
 
-### plotter metadata
-**plotters** are described by a structured set of metadata in a dict.
-Example:
-
-```
-_plotter_metadata = {
-    "data_type": "timeseries",
-    "n_data_min": 2,
-    "n_data_max": 12,
-    "tags": ["line", "color", "scatter"],
-}
-```
-
-This metadata can be used by recommender methods to choose the ideal plotting method.
 
 ### report usage
 Reports can be written as [parameterized .Rmd documents](https://bookdown.org/yihui/rmarkdown/parameterized-reports.html), interactive python scripts, or
@@ -80,6 +95,3 @@ rmarkdown::render(report_path, params = list(
   file = "file2.csv"
 ))
 ```
-
-## definitions, terms, abbreviations
-* ts: timeseries
