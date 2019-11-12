@@ -4,13 +4,27 @@ NOTE: many of these tests only test that the plotting methods
     TODO: Should we be checking the output figures somehow?
 """
 
+import os
 import sys
 from unittest import TestCase
 
 from plo7y.reporters.ts_compare import ts_compare
 
+TEST_DATA_DIR = "./test_data"
+THIS_TEST_SUB_PATH = __file__.split("/plo7y/")[1].split('_test.py')[0]
+TEST_OUTPUT_DIR = "./examples/test_outputs/{}".format(THIS_TEST_SUB_PATH)
+
 
 class Test_ts_compare(TestCase):
+    def setUP(self):
+        print("\n\ncreating '{}'\n\n".format(TEST_OUTPUT_DIR))
+        os.makedirs(TEST_OUTPUT_DIR, exist_ok=True)
+
+    def get_output_path(self, fname):
+        return "{}/{}".format(
+            TEST_OUTPUT_DIR, fname
+        )
+
     # tests:
     #########################
     def test_obis_occurrence(self):
@@ -19,8 +33,8 @@ class Test_ts_compare(TestCase):
             "test_data/obis.csv",
             x_key="eventDate",
             y_key_list=["X", "year"],
-            savefig="/tmp/plo7y_test_{}.png".format(
-                sys._getframe().f_code.co_name
+            savefig=self.get_output_path("{}.png".format(
+                sys._getframe().f_code.co_name)
             ),
         )
 
@@ -31,8 +45,8 @@ class Test_ts_compare(TestCase):
             x_key="eventDate",
             y_key="X",
             y_group_by_key="species",
-            savefig="/tmp/plo7y_test_{}.png".format(
-                sys._getframe().f_code.co_name
+            savefig=self.get_output_path("{}.png".format(
+                sys._getframe().f_code.co_name)
             ),
         )
 
@@ -43,8 +57,8 @@ class Test_ts_compare(TestCase):
             x_key="eventDate",
             y_key="occurrenceStatus",
             y_group_by_key="species",
-            savefig="/tmp/plo7y_test_{}.png".format(
-                sys._getframe().f_code.co_name
+            savefig=self.get_output_path("{}.png".format(
+                sys._getframe().f_code.co_name)
             ),
         )
 
@@ -56,7 +70,7 @@ class Test_ts_compare(TestCase):
                 x_key="eventDate",
                 y_key="X",
                 y_group_by_key="species",
-                savefig="/tmp/plo7y_test_{}.png".format(
-                    sys._getframe().f_code.co_name
+                savefig=self.get_output_path("{}.png".format(
+                    sys._getframe().f_code.co_name)
                 ),
             )
