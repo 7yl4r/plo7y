@@ -4,21 +4,18 @@ NOTE: many of these tests only test that the plotting methods
     TODO: Should we be checking the output figures somehow?
 """
 
-import os
 import sys
 from unittest import TestCase
 
 from plo7y.reporters.ts_compare import ts_compare
-from plo7y._tests import TEST_DATA_DIR, get_test_output_path
+from plo7y._tests import get_test_output_path
 
 
 class Test_ts_compare(TestCase):
-
-
     # tests:
     #########################
     def test_obis_occurrence(self):
-        """ test ts compare on obis occurence data """
+        """Test ts compare on obis occurence data."""
         ts_compare(
             "test_data/obis.csv",
             x_key="eventDate",
@@ -29,7 +26,7 @@ class Test_ts_compare(TestCase):
         )
 
     def test_obis_group_by_species_on_X(self):
-        """ test ts compare on obis occurence data using y_group_by_key"""
+        """Test ts compare on obis occurence data using y_group_by_key."""
         ts_compare(
             "test_data/obis.csv",
             x_key="eventDate",
@@ -41,7 +38,7 @@ class Test_ts_compare(TestCase):
         )
 
     def test_obis_group_by_species_on_occurrence_status(self):
-        """ test ts compare on subset of obis occurence using y_group_by_key"""
+        """Test ts compare on subset of obis occurence using y_group_by_key."""
         ts_compare(
             "test_data/occurrenceStatus.csv",
             x_key="eventDate",
@@ -53,7 +50,7 @@ class Test_ts_compare(TestCase):
         )
 
     def test_obis_occurrence_empty(self):
-        """ test ts compare on 0-length obis occurence data"""
+        """Test ts compare on 0-length obis occurence data."""
         with self.assertRaises(AssertionError):
             ts_compare(
                 "test_data/obis_empty.csv",
