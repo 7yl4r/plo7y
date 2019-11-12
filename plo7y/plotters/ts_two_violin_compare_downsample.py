@@ -5,7 +5,8 @@ import seaborn
 def ts_downsample_compare_two(
     dta, x_key, y_key, y_group_by_key, figsize
 ):
-    dta.index = pandas.to_datetime(dta[x_key])
+    # TODO: is utc=True usage correct here?!?
+    dta.index = pandas.to_datetime(dta[x_key], utc=True)
     # === downsample until we find a reasonable number of violins
     #    since I wasn't sure how to calculate the frequency of the
     #    existing dataset this brute-forces by starting at a huge
