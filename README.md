@@ -9,11 +9,18 @@ This concept is meant to expand on [this blog post](http://7ych.blogspot.com/201
 
 ## Thoughts:
 
+Tests run on example data from packages or generated using a specific random seed.
+Test outputs write to `examples/test_outputs/`.
+Tests exist alongside code and are collected & run via pytest.
+
 ### rules/assumptions
 * all data inputs should be .csv files (with headers?)?
-*
 
 ### Definitions
+* *data*: data that can be passed into one of the "method types" below. Can be:
+    - pandas DataFrame
+    - csv file object
+    - str path to a file
 * *ts*: timeseries
 * **plot type**:
     - string used as a "key" to identify a plot. eg "bar", "pie", "scatter".
