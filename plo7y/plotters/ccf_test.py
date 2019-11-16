@@ -1,11 +1,12 @@
 from unittest import TestCase
 import matplotlib.pyplot as plt
 import sys
+import numpy as np
 
 from plo7y._tests import get_test_output_path
 
 
-def get_sample_data():
+def _get_testdata_out_of_phase_sines():
     print("creating example covariance data.")
     import numpy as np
     import pandas as pd
@@ -26,6 +27,17 @@ def get_sample_data():
     return dta, exog
 
 
+def _get_testdata_noisy_sines():
+    # npts = 500
+    x = np.linspace(0, 50, 500)
+
+    npts = len(x)
+    y1 = 5 * np.sin(x/2) + np.random.randn(npts)
+    # y2 = 5 * np.cos(x/2) + np.random.randn(npts)
+    y2 = 5 * np.sin(x/2) + np.random.randn(npts)
+    return x, y1, y2
+
+
 class Test_ccf(TestCase):
     def tearDown(self):
         plt.clf()
@@ -33,7 +45,7 @@ class Test_ccf(TestCase):
     def test_ccf_plot_on_sample_data(self):
         from plo7y.plotters.ccf import plotCCF
 
-        dta, exog = get_sample_data()
+        dta, exog = _get_testdata_out_of_phase_sines()
         plotCCF(
             dta, exog, saveFigPath=get_test_output_path(
                 __file__, sys._getframe().f_code.co_name
@@ -45,8 +57,9 @@ class Test_cross_correlation(TestCase):
     def test_cross_correlation_on_sample_data(self):
         from plo7y.plotters.cross_correlation import plot
 
-        dta, exog = get_sample_data()
+        x, y1, y2 = _get_testdata_noisy_sines()
         plot(
+            x, y1, y2,
             # dta, exog,
             saveFigPath=get_test_output_path(
                 __file__, sys._getframe().f_code.co_name

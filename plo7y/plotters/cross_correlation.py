@@ -7,15 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot(*args, saveFigPath, **kwargs):
-    # npts = 500
-    x = np.linspace(0, 50, 500)
-
-    npts = len(x)
-    y1 = 5 * np.sin(x/2) + np.random.randn(npts)
-    # y2 = 5 * np.cos(x/2) + np.random.randn(npts)
-    y2 = 5 * np.sin(x/2) + np.random.randn(npts)
-
+def plot(x, y1, y2, *args, saveFigPath, **kwargs):
     def crocor(x, y):
         npts = len(x)
         lags = np.arange(-npts + 1, npts)
