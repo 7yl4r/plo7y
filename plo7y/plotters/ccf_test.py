@@ -65,3 +65,16 @@ class Test_cross_correlation(TestCase):
                 __file__, sys._getframe().f_code.co_name
             )
         )
+
+
+class Test_ccf_scipy(TestCase):
+    def test_ccf_scipy_on_sample_data(self):
+        from plo7y.plotters.ccf_scipy import plot
+
+        x, y1, y2 = _get_testdata_noisy_sines()
+        plot(
+            # dta, exog,
+            saveFigPath=get_test_output_path(
+                __file__, sys._getframe().f_code.co_name
+            )
+        )
