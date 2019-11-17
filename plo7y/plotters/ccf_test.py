@@ -38,6 +38,12 @@ def _get_testdata_noisy_sines():
     return x, y1, y2
 
 
+def _get_testdata_binary_and_noise():
+    sig = np.repeat([0., 1., 1., 0., 1., 0., 0., 1.], 128)
+    sig_noise = sig + np.random.randn(len(sig))
+    return sig, sig_noise
+
+
 class Test_ccf(TestCase):
     def tearDown(self):
         plt.clf()
@@ -71,9 +77,9 @@ class Test_ccf_scipy(TestCase):
     def test_ccf_scipy_on_sample_data(self):
         from plo7y.plotters.ccf_scipy import plot
 
-        x, y1, y2 = _get_testdata_noisy_sines()
+        y1, y2 = _get_testdata_binary_and_noise()
         plot(
-            # dta, exog,
+            y1, y2,
             saveFigPath=get_test_output_path(
                 __file__, sys._getframe().f_code.co_name
             )
