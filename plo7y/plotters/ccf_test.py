@@ -2,14 +2,13 @@ from unittest import TestCase
 import matplotlib.pyplot as plt
 import sys
 import numpy as np
+import pandas as pd
 
 from plo7y._tests import get_test_output_path
 
 
 def _get_testdata_out_of_phase_sines():
     print("creating example covariance data.")
-    import numpy as np
-    import pandas as pd
     np.random.seed(0)
     x_0 = -10
     x_f = 10
@@ -25,7 +24,7 @@ def _get_testdata_out_of_phase_sines():
     plt.clf()
     dta = pd.DataFrame(y1)  # [x, y1, y2]  # TODO dataframe?
     exog = pd.DataFrame(y2)
-    return dta, exog
+    return pd.DataFrame(x), dta, exog
 
 
 def _get_testdata_noisy_sines():
@@ -37,7 +36,7 @@ def _get_testdata_noisy_sines():
     y1 = 5 * np.sin(x/2) + np.random.randn(npts)
     # y2 = 5 * np.cos(x/2) + np.random.randn(npts)
     y2 = 5 * np.sin(x/2) + np.random.randn(npts)
-    return x, y1, y2
+    return pd.DataFrame(x), pd.DataFrame(y1), pd.DataFrame(y2)
 
 
 def _get_testdata_binary_and_noise():
@@ -51,24 +50,36 @@ class Test_ccf(TestCase):
     def tearDown(self):
         plt.clf()
 
-    def test_ccf_plot_on_sample_data(self):
+    def test_ccf_plot_on_phased_sines(self):
         from plo7y.plotters.ccf import plotCCF
 
-        dta, exog = _get_testdata_out_of_phase_sines()
+        x, y1, y2 = _get_testdata_out_of_phase_sines()
         plotCCF(
-            dta, exog, saveFigPath=get_test_output_path(
+            y1, y2, saveFigPath=get_test_output_path(
                 __file__, sys._getframe().f_code.co_name
             )
         )
 
 
 class Test_cross_correlation(TestCase):
-    def test_cross_correlation_on_sample_data(self):
+    def test_cross_correlation_on_noisy_sines(self):
         from plo7y.plotters.cross_correlation import plot
 
         x, y1, y2 = _get_testdata_noisy_sines()
         plot(
-            x, y1, y2,
+            x.squeeze().to_numpy(), y1.squeeze().to_numpy(), y2.squeeze().to_numpy(),
+            # dta, exog,
+            saveFigPath=get_test_output_path(
+                __file__, sys._getframe().f_code.co_name
+            )
+        )
+
+    def test_cross_correlation_on_phased_sines(self):
+        from plo7y.plotters.cross_correlation import plot
+
+        x, y1, y2 = _get_testdata_out_of_phase_sines()
+        plot(
+            x.squeeze().to_numpy(), y1.squeeze().to_numpy(), y2.squeeze().to_numpy(),
             # dta, exog,
             saveFigPath=get_test_output_path(
                 __file__, sys._getframe().f_code.co_name
