@@ -10,6 +10,7 @@ def _get_testdata_out_of_phase_sines():
     print("creating example covariance data.")
     import numpy as np
     import pandas as pd
+    np.random.seed(0)
     x_0 = -10
     x_f = 10
     dx = 200
@@ -28,6 +29,7 @@ def _get_testdata_out_of_phase_sines():
 
 
 def _get_testdata_noisy_sines():
+    np.random.seed(0)
     # npts = 500
     x = np.linspace(0, 50, 500)
 
@@ -39,6 +41,7 @@ def _get_testdata_noisy_sines():
 
 
 def _get_testdata_binary_and_noise():
+    np.random.seed(0)
     sig = np.repeat([0., 1., 1., 0., 1., 0., 0., 1.], 128)
     sig_noise = sig + np.random.randn(len(sig))
     return sig, sig_noise
