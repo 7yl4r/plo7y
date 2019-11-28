@@ -22,7 +22,7 @@ def base16(number):
     return number.to_bytes(1, 'little').hex()
 
 
-def main(df, var1, var2, var3):
+def main(df, var1, var2, var3, saveFigPath=None):
     # master_dataframe_ is exported by class_subset_vs_all_dists
     df = df.dropna()
 
@@ -79,7 +79,10 @@ def main(df, var1, var2, var3):
         'Point size is score.'
     )
 
-    plt.show()
+    if (saveFigPath is None):
+        plt.show()
+    else:
+        plt.savefig(str(saveFigPath), bbox_inches='tight')
 
 if __name__ == "__main__":
     dta = pd.read_csv('sample_data.csv')

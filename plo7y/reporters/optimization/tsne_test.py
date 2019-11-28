@@ -3,10 +3,11 @@ NOTE: many of these tests only test that the plotting methods
     are able to finish without throwing an exception.
     TODO: Should we be checking the output figures somehow?
 """
-
+import sys
 from unittest import TestCase
 
 from plo7y.reporters.optimization.tsne import main
+from plo7y._tests import get_test_output_path
 
 
 class Test_tsne(TestCase):
@@ -28,5 +29,8 @@ class Test_tsne(TestCase):
         # import pdb; pdb.set_trace()
         main(
             df,
-            "var1", "var2", "var3"
+            "var1", "var2", "var3",
+            saveFigPath=get_test_output_path(
+                __file__, sys._getframe().f_code.co_name
+            )
         )
