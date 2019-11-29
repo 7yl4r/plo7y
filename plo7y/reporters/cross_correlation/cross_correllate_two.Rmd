@@ -1,6 +1,7 @@
 ---
 params:
-  data: file.csv
+  timeseries_1: test_data/generated/timeseries_binary_signal.csv
+  timeseries_2: test_data/generated/timeseries_binary_signal_noisy.csv
 ---
 ```{r}
 print("hello world!")
@@ -15,10 +16,11 @@ TODO: inject variables into this report template:
 ```{python}
 from scipy import signal
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
-np.random.seed(0)
-sig = np.repeat([0., 1., 1., 0., 1., 0., 0., 1.], 128)
-sig_2 = sig + np.random.randn(len(sig))
+
+sig = pd.read_csv(params.timeseries_1)
+sig_2 = pd.read_csv(params.timeseries_2)
 
 corr = signal.correlate(sig_2, np.ones(128), mode='same') / 128
 clock = np.arange(64, len(sig), 128)

@@ -8,6 +8,21 @@ import pandas as pd
 DIRPATH = "./test_data/generated/"
 
 
+def generate_test_data():
+    x, dta, exog = _get_testdata_out_of_phase_sines()
+    x.to_csv(DIRPATH + "linspace_x.csv")
+    dta.to_csv(DIRPATH + "sine_1.csv")
+    exog.to_csv(DIRPATH + "sine_2.csv")
+
+    sig, sig_noise = _get_testdata_binary_and_noise()
+    pd.DataFrame(sig).to_csv(
+        DIRPATH + "timeseries_binary_signal.csv"
+    )
+    pd.DataFrame(sig_noise).to_csv(
+        DIRPATH + "timeseries_binary_signal_noisy.csv"
+    )
+
+
 def _get_testdata_out_of_phase_sines():
     print("creating example covariance data.")
     np.random.seed(0)
@@ -17,12 +32,12 @@ def _get_testdata_out_of_phase_sines():
     x = np.linspace(x_0, x_f, dx)
     y1 = np.sin(x+0) + np.random.normal(-0.1, 0.1, dx)
     y2 = np.sin(x-1) + np.random.normal(-0.1, 0.1, dx)
-    # TODO: output this plot somewhere...
-    plt.plot(x, y1)
-    plt.plot(x, y2)
+    # # TODO: output this plot somewhere...
+    # plt.plot(x, y1)
+    # plt.plot(x, y2)
     # plt.show()
     # plt.savefig(get_test_output_path(__file__, "sample_data"))
-    plt.clf()
+    # plt.clf()
     dta = pd.DataFrame(y1)  # [x, y1, y2]  # TODO dataframe?
     exog = pd.DataFrame(y2)
     return pd.DataFrame(x), dta, exog
@@ -48,3 +63,4 @@ def _get_testdata_binary_and_noise():
 
 if __name__ == "__main__":
     # TODO: generate data & insert into csv file
+    pass

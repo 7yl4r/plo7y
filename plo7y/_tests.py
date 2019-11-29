@@ -3,6 +3,7 @@ These are helper methods for implementing tests.
 """
 
 import os
+import hashlib
 
 TEST_DATA_DIR = "./test_data"
 
@@ -19,3 +20,11 @@ def get_test_output_path(file_object, test_output_fname):
     return "{}/{}".format(
         TEST_OUTPUT_DIR, test_output_fname
     )
+
+
+def md5(fname):
+    hash_md5 = hashlib.md5()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
