@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot(sig, sig_2, *args, saveFigPath):
+def plot(sig, sig_2, saveFigPath=None):
     corr = signal.correlate(sig_2, np.ones(128), mode='same') / 128
     clock = np.arange(64, len(sig), 128)
     fig, (ax_orig, ax_noise, ax_corr) = plt.subplots(3, 1, sharex=True)
@@ -18,4 +18,7 @@ def plot(sig, sig_2, *args, saveFigPath):
     ax_corr.set_title('Cross-correlated with rectangular pulse')
     ax_orig.margins(0, 0.1)
     fig.tight_layout()
-    plt.savefig(saveFigPath)
+    if saveFigPath is None:
+        plt.show()
+    else:
+        plt.savefig(saveFigPath)
