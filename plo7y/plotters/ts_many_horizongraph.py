@@ -19,8 +19,14 @@ Based on https://github.com/thomaskern/horizongraph_matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
-from plo7y.ts_compare.horizon_data_transformers \
+from plo7y.plotters.horizon_data_transformers \
     import TimeZeroCenteredDataTransformer
+
+
+def plot(x, y, labels, saveFigPath, data_transformers=[]):
+    da_plot = Horizon().run(x, y, labels, bands=3)
+    da_plot.subplots_adjust(left=0.07, right=0.998, top=0.99, bottom=0.01)
+    da_plot.savefig(saveFigPath)
 
 
 class InputError(Exception):
