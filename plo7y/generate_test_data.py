@@ -9,18 +9,9 @@ DIRPATH = "./test_data/generated/"
 
 
 def generate_test_data():
-    x, dta, exog = _get_testdata_out_of_phase_sines()
-    x.to_csv(DIRPATH + "linspace_x.csv")
-    dta.to_csv(DIRPATH + "sine_1.csv")
-    exog.to_csv(DIRPATH + "sine_2.csv")
+    _get_testdata_out_of_phase_sines()
 
-    sig, sig_noise = _get_testdata_binary_and_noise()
-    pd.DataFrame(sig).to_csv(
-        DIRPATH + "timeseries_binary_signal.csv"
-    )
-    pd.DataFrame(sig_noise).to_csv(
-        DIRPATH + "timeseries_binary_signal_noisy.csv"
-    )
+    _get_testdata_binary_and_noise()
 
 
 def _get_testdata_out_of_phase_sines():
@@ -38,9 +29,13 @@ def _get_testdata_out_of_phase_sines():
     # plt.show()
     # plt.savefig(get_test_output_path(__file__, "sample_data"))
     # plt.clf()
+    x = pd.DataFrame(x)
     dta = pd.DataFrame(y1)  # [x, y1, y2]  # TODO dataframe?
     exog = pd.DataFrame(y2)
-    return pd.DataFrame(x), dta, exog
+    x.to_csv(DIRPATH + "linspace_x.csv")
+    dta.to_csv(DIRPATH + "sine_1.csv")
+    exog.to_csv(DIRPATH + "sine_2.csv")
+    return x, dta, exog
 
 
 def _get_testdata_noisy_sines():
@@ -59,6 +54,16 @@ def _get_testdata_binary_and_noise():
     np.random.seed(0)
     sig = np.repeat([0., 1., 1., 0., 1., 0., 0., 1.], 128)
     sig_noise = sig + np.random.randn(len(sig))
+
+    sig = pd.DataFrame(sig)
+    sig_noise = pd.DataFrame(sig_noise)
+    sig.to_csv(
+        DIRPATH + "timeseries_binary_signal.csv"
+    )
+    sig_noise.to_csv(
+        DIRPATH + "timeseries_binary_signal_noisy.csv"
+    )
+
     return sig, sig_noise
 
 if __name__ == "__main__":

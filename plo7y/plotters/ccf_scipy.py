@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 
 
 def plot(sig, sig_2, saveFigPath=None):
+    sig = sig.squeeze().to_numpy()
+    sig_2 = sig_2.squeeze().to_numpy()
     corr = signal.correlate(sig_2, np.ones(128), mode='same') / 128
     clock = np.arange(64, len(sig), 128)
     fig, (ax_orig, ax_noise, ax_corr) = plt.subplots(3, 1, sharex=True)
