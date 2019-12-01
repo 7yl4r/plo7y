@@ -1,8 +1,10 @@
 import pandas as pd
-
+import os
 
 def load_data(fpath):
-    return pd.read_csv(fpath, index_col=0)
+    return pd.read_csv(
+        fpath, index_col=0, names=[os.path.basename(fpath).split('.')[0]]
+    )
 
 
 def get_test_data(fpath):

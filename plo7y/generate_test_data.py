@@ -2,7 +2,6 @@
 Generates test_data/generated/ files.
 """
 import numpy as np
-import matplotlib as plt
 import pandas as pd
 
 DIRPATH = "./test_data/generated/"

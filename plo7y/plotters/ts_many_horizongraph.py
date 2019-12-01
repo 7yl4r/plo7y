@@ -23,7 +23,28 @@ from plo7y.plotters.horizon_data_transformers \
     import TimeZeroCenteredDataTransformer
 
 
-def plot(x, y, labels, saveFigPath, data_transformers=[]):
+def prep_data(df, x_key, y_keys):
+    """
+    Converts dataframe, x_key, y_keys[] into weird old format
+    I must have once liked using x list and y list of lists.
+    """
+    x = list(df[x_key])
+    y = []
+
+    for col in df[y_keys]:
+        y.append(list(df[col].values))
+
+    labels = y_keys
+
+    return x, y, labels
+
+
+def plot(df, x_key, y_keys, saveFigPath, data_transformers=[]):
+    x, y, labels = prep_data(df, x_key, y_keys)
+    _plot(x, y, labels, saveFigPath, data_transformers)
+
+
+def _plot(x, y, labels, saveFigPath, data_transformers=[]):
     da_plot = Horizon().run(x, y, labels, bands=3)
     da_plot.subplots_adjust(left=0.07, right=0.998, top=0.99, bottom=0.01)
     da_plot.savefig(saveFigPath)
