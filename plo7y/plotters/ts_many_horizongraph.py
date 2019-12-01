@@ -39,15 +39,18 @@ def prep_data(df, x_key, y_keys):
     return x, y, labels
 
 
-def plot(df, x_key, y_keys, saveFigPath, data_transformers=[]):
+def plot(df, x_key, y_keys, saveFigPath=None, data_transformers=[]):
     x, y, labels = prep_data(df, x_key, y_keys)
     _plot(x, y, labels, saveFigPath, data_transformers)
 
 
-def _plot(x, y, labels, saveFigPath, data_transformers=[]):
+def _plot(x, y, labels, saveFigPath=None, data_transformers=[]):
     da_plot = Horizon().run(x, y, labels, bands=3)
     da_plot.subplots_adjust(left=0.07, right=0.998, top=0.99, bottom=0.01)
-    da_plot.savefig(saveFigPath)
+    if saveFigPath is None:
+        da_plot.show()
+    else:
+        da_plot.savefig(saveFigPath)
 
 
 class InputError(Exception):
