@@ -30,7 +30,7 @@ class Test_horizongraph(TestCase):
         from plo7y.plotters.ts_many_horizongraph import _plot
 
         _plot(
-            [1,2,3], [[11,22,33],[4,3,2]], [1, 2],
+            [1, 2, 3], [[11, 22, 33], [4, 3, 2]], [1, 2],
             saveFigPath=get_test_output_path(
                 __file__, sys._getframe().f_code.co_name
             )
