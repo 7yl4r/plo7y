@@ -6,7 +6,7 @@ import statsmodels.api as sm
 
 def prep_dataframes(df1, df2):
     # TODO: do a more throrough check
-    print("ndims: {}, {}".format(df1.ndim, df2.ndim))
+    # print("ndims: {}, {}".format(df1.ndim, df2.ndim))
     if df1.ndim == 2:
         df1 = df1.squeeze().to_numpy()
     if df2.ndim == 2:
