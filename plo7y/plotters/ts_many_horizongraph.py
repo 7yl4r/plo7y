@@ -66,7 +66,7 @@ class Horizon(object):
 
     # public methods
     def run(
-        self, x, y, labels, figsize=(20, 3), bands=3,
+        self, x, y, labels, figsize=None, bands=3,
         colors=(
             # dark blue, med blue, light blue, dark red, med red, light red
             "#8BBCD4", "#2B7ABD", "#0050A0", "#EF9483", "#E02421", "#A90E0A"
@@ -100,6 +100,11 @@ class Horizon(object):
         -------
         plt object
         """
+        if figsize is None:
+            if len(y) > 5 and len(y) < 50:
+                figsize = (20, int(len(y)/2))
+        else:
+            figsize = (20, 3)
         self.check_valid_params(x, y, labels, figsize, bands, colors)
         F = self.create_figure(figsize)
 
