@@ -7,6 +7,13 @@ This concept is meant to expand on [this blog post](http://7ych.blogspot.com/201
 
 ----------------------------------------------------------------------------
 
+```
+# generate test data
+python plo7y/generate_test_data.py
+```
+
+----------------------------------------------------------------------------
+
 ## Thoughts:
 
 Tests run on example data from packages or generated using a specific random seed.

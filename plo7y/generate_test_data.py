@@ -67,4 +67,4 @@ def _get_testdata_binary_and_noise():
 
 if __name__ == "__main__":
     # TODO: generate data & insert into csv file
-    pass
+    generate_test_data()
